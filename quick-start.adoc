@@ -1,0 +1,371 @@
+= Preface
+
+In this quick start, we will scratch the surface of Jmix and develop a very simple but fully functional project management application. It will show the main things for creating any web application: 
+
+* How to design a data model.
+* How to manipulate data.
+* How to create business logic.
+* How to add security.
+* How to create a user interface. 
+
+This tutorial will be just enough for you to start your own Jmix application. In this tutorial, we will use https://www.jmix.io/tools/[Jmix Studio^], so please install it before you begin and accept a trial subscription to access the visual designers.
+
+Sample code repo: https://github.com/Haulmont/jmix-quickstart.
+
+1:05 Jmix Project Creation 
+
+We will create an empty Jmix project using the corresponding IntelliJ IDEA menu. We will use JDK 11.
+
+image:images/create-project.png[align="center"]
+
+With Jmix, you can generate project code based on templates. To create an application, let's use the `single-module-application` template.
+
+image:images/template.png[align="center"]
+
+Assign a name - `jmix-pm` for your application. 
+
+image:images/project-name.png[align="center"]
+
+After the project is created, you can move further with the help of the Jmix Tool Window that allows you to get access to different files and settings as well as add some project-specific objects.
+
+image:images/studio.png[align="center"]
+
+2:45 Data Model and Database Creation
+
+The first task is creating entities. The business domain model has only two classes: `Project` and `Task`. The relation is one-to-many: one project can have many tasks.
+
+image:images/data-model.png[align="center"]
+
+For a starter, let's create the `Project` entity. To do this, we can use a link on project's welcome page.
+
+image:images/new-entity-welcome.png[align="center"]
+
+Another way is to right-click the *Data Model* node in the *Jmix Tool Window* and select *New -> JPA Entity*.
+
+image:images/new-entity.png[align="center"]
+
+Enter entity's class - `Project`. For this sample application, we do not need to change other entity parameters.
+
+image:images/project-entity.png[align="center"]
+
+In the entity designer, create attributes according to the specification:
+
+|===
+|*Name* |*Type* |*Mandatory*
+|name|String (255)|Yes
+|startDate|LocalDate|
+|endDate|LocalDate|
+|manager|Association to the "User" entity, many-to-one cardinality|Yes
+|===
+
+In Jmix, we use standard JPA entities, so you can create them using either code editor or visual designer. Just click the *+* icon and add attributes to the entity. Jmix Studio will generate class members for you.
+
+image:images/new-attribute.png[align="center"]
+
+Look at the adding a mandatory reference to a user. The relation is many-to-one, so we'll define an association field called `manager` that references the `User` class. Finally, the field definition should look like this:
+
+image:images/manager-attribute.png[align="center"]
+
+In Jmix, you can specify a format for a proper entity display as a string in the UI using *Instance name*. For the `Project` entity, we will select the `name` attribute.
+
+image:images/instance-name.png[align="center"]
+
+If we look at the *Text* tab on the bottom of the entity designer, we can see just a JPA-annotated Java class. The generated code can be updated if needed, and the designer will be updated accordingly when you switch to the *Designer* tab.
+
+Let's move further and create the `Task` entity and link it to our `Project` class. Fields specification table follows.
+
+|===
+|Name |Type |Mandatory
+|name|String (255)|Yes
+|assignee|Association to the "User" entity, many-to-one cardinality|Yes
+|startDate|LocalDateTime|
+|estimatedEfforts|Integer|
+|===
+
+A task cannot exist without a project. This relation is called `Composition` in Jmix. Let's create a link between a task and a project. Open the `Project` entity and create a composition attribute - `tasks` - the list of tasks within `Project`. 
+
+image:images/tasks-attribute.png[align="center"]
+
+To make a link to `Project` from the `Task` entity, we need to create an inverse attribute in the task. 
+
+image:images/mapped-attribute.png[align="center"]
+
+The data model is ready. Let's generate database update scripts. 
+
+Expand the *Data Stores* node in the *Jmix Tool Window*, right-click *Main Data Store* and select *Generate Liquibase Changelog*.
+
+image:images/generate-database-scripts.png[align="center"]
+
+Jmix Studio generates update scripts by comparing the existing database schema with the application data model.  
+
+For our project, we will use an in-memory database - HSQLDB.
+
+image:images/hsqldb.png[align="center"]
+
+Studio may ask us to apply existing scripts to align the application and the database state.
+
+image:images/apply-existing-scripts.png[align="center"]
+ 
+That's it. The database has been created.
+
+5:27 Generating CRUD admin screens
+
+Jmix Studio contains a UI screen generation wizard that helps us to create basic but useful UI screens:
+
+* Browser - to show the list of entities in a grid.
+* Editor - to edit one entity instance using a form-like user interface.
+
+First, we will create screens to work with projects. Start a wizard by clicking the *Create screen* menu item in the *Screens* menu on the top of the entity designer.
+
+image:images/create-screen.png[align="center"]
+
+Also, you can use Jmix tool window to start screen generation wizard. Open the context menu by clicking the *+* icon in the toolbar and select *Screen*.
+
+image:images/create-screen-menu.png[align="center"]
+
+Select *Entity browser and editor screens* in the wizard.
+
+image:images/templates.png[align="center"]
+
+Then click *Next* and stop at the *Entity browser fetch plan* step.
+
+In Jmix, we can define several fetch plans for every entity. They specify which fields will be fetched from the database. You can define fetch plans in a separate file to use them in the different modules of your application or create an inline fetch plan while creating a screen.
+
+Let's create an inline fetch plan. In addition to selected properties, mark the `manager` reference.
+
+image:images/project-browser.png[align="center"]
+
+At the next step, let's add both `manager` and `tasks` fields.
+
+image:images/project-editor.png[align="center"]
+
+Click *Next* at the next step and finish screens creation.
+
+As you can see, each screen consists of two parts: a controller, written in Java, which is responsible for internal screen logic and events handling, and an XML layout that defines the screen appearance. In our case, the browser consists of the `ProjectBrowse.java` and `project-browse.xml` files and editor - `ProjectEdit.java` and `project-edit.xml` accordingly.
+
+You can find XML descriptors in the *Data Model* sections in the *Jmix Tool Window*.
+
+image:images/xml-files.png[align="center"]
+
+To open the controller, use the context menu.
+
+image:images/open-controller.png[align="center"]
+
+Please pay attention to the data section in the XML screen descriptors - it defines how the data is fetched from the database.
+
+[source,xml]
+----
+<data readOnly="true">
+    <collection id="projectsDc"
+                class="com.company.jmixpm.entity.Project">
+        <fetchPlan extends="_base">
+            <property name="manager" fetchPlan="_base"/>
+        </fetchPlan>
+        <loader id="projectsDl">
+            <query>
+                <![CDATA[select e from Project e]]>
+            </query>
+        </loader>
+    </collection>
+</data>
+----
+
+After screens are created, you can see screen preview by using buttons in the top right corner of the screen layout editor. The preview shows that all selected attributes are added to the screens.
+
+image:images/preview.png[align="center"]
+
+UI components can be bound to data in a bi-directional way. All changes in the bound fields are reflected in the selected data and vice versa. 
+
+image:images/bound-data.png[align="center"]
+
+Now let's generate CRUD screens for the `Task` entity. With the `Task`, we will also fetch `Assignee` and `Project` entities. 
+
+image:images/task-screens.png[align="center"]
+
+At the next step, the necessary fields are already selected.
+
+image:images/task-editor.png[align="center"]
+
+You can easily navigate between a screen controller, descriptor, and linked entities with Jmix Studio using buttons on the top of the window:
+
+image:images/navigate-controller.png[align="center"]
+
+image:images/navigate-descriptor.png[align="center"]
+
+image:images/navigate-data-model.png[align="center"]
+
+7:25 Running application in development mode 
+
+To run the application, you can use the *Run Configuration* tool on the top of the IDE window.
+
+image:images/run-configuration-menu.png[align="center"]
+
+After some time, you can access the application using the browser. By default, the URL will be http://localhost:8080/ .
+
+You can see the application log file at the bottom of the IDE in the *Run* window.
+
+image:images/run-console.png[align="center"]
+
+Open the URL in your browser and log into the application using `admin` as a username. The password is `admin` by default. 
+
+image:images/login.png[align="center"]
+
+You can find screens for entities manipulation under the *Application* menu.
+
+image:images/application-menu.png[align="center"]
+
+Then let's add some data to the database. Create a new project and assign the `admin` user as a manager.
+
+image:images/new-project-one.png[align="center"]
+
+We can add a task when creating a project. 
+
+image:images/new-task-one.png[align="center"]
+
+Let's create a new user - dev1 - as an assignee for this task. 
+
+image:images/create-dev1.png[align="center"]
+
+Save the newly created project. The task will be saved automatically.  
+
+8:25 Adding security
+
+In Jmix, you can create roles and give them permissions to access the application data such as particular entities, attributes, or functionality like screens and menu items in the admin UI. 
+
+Open the *Resource roles* screen and create the "Developer" role. Select *Entity policy* from the list and allow developers to view and edit tasks.
+
+image:images/entity-policy-menu.png[align="center"]
+
+image:images/entity-policy.png[align="center"]
+
+Then allow developers to edit task estimated time and start date only. 
+
+image:images/attributes-policy.png[align="center"]
+
+Finally, add permissions to view browser and editor screens. Select *Grant access to the menu item* to add *Tasks* to the main menu.
+
+image:images/browse-policy.png[align="center"]
+
+image:images/edit-policy.png[align="center"]
+ 
+Then, switch to the *Child roles* tab and add another role to the "Developer" - the "UI: minimal access" role that allows users to log in to the application. 
+
+image:images/minimal-role.png[align="center"]
+
+Let's assign the role "Developer" to the "dev1" user. Select *Role assignments* for the necessary user in the *Users* screen.
+
+image:images/role-assingments.png[align="center"]
+
+Now let's log in as developer one. We can see that this user has access to the specified screens and attributes only. 
+
+image:images/developer-login.png[align="center"] 
+
+9:38 Adding business logic
+
+Now we will use Jmix Studio to create a service that implements business logic and use this service in a screen. It will be a Spring service that will return the least busy user. In the admin UI, we will use this service to assign a task to this user by default.
+
+Use a toolbar in the Jmix tool window to open commonly used actions. Select *Spring Bean* and enter the class name - `TaskService`.
+
+image:images/create-service.png[align="center"]
+
+Studio will generate an empty Spring bean. Replace the `@Component` annotation with `@Service`.
+
+image:images/empty-class.png[align="center"]
+
+Let's create the `findLeastBusyUser()` method. In the service, we will use the Jmix service - `DataManager`. It allows us to access data by using a JPQL query.
+
+Inject `DataManager` into the service by using the *Inject* button on the top of the window.
+
+image:images/inject-button.png[align="center"]
+
+Select `DataManager` in the popup window.
+
+image:images/select-data-manager.png[align="center"]
+
+Add the method's implementation represented below:
+
+[source,java]
+----
+@Service
+public class TaskService { 
+
+    @Autowired
+    private DataManager dataManager;
+
+    public User findLeastBusyUser() {
+        User leastBusyUser = dataManager.loadValues("select u, count(t.id) " + // <1>
+                "from User u left outer join Task_ t " +
+                "on u = t.assignee " +
+                "group by u order by count(t.id)")
+                .properties("user", "tasks")
+                .list().stream().map(e -> e.<User>getValue("user"))
+                .findFirst() // <2>
+                .orElseThrow(IllegalStateException::new);
+        return leastBusyUser; // <3>
+    }
+}
+----
+<1> A JPQL query that selects users and count tasks assigned to these users.
+<2> Takes the first user in the selected set.
+<3> Returns the user.
+
+The service is ready, let's use it in the task editor screen. 
+
+Click the *Subscribe* button on the top of the window with the screen controller and select the `InitEntity` event.
+
+image:images/generate-handler.png[align="center"]
+
+image:images/init-entity-event.png[align="center"]
+
+Here is the implementation of the method:
+
+[source,java]
+----
+public class TaskEdit extends StandardEditor<Task> {
+    @Autowired
+    private TaskService taskService; // <1>
+
+    @Subscribe
+    public void onInitEntity(InitEntityEvent<Task> event) {
+        event.getEntity().setAssignee(taskService.findLeastBusyUser()); // <2>
+    }
+}
+----
+<1> We inject the `TaskService` into the screen.
+<2> Assigns the execution result to the `assignee` field of the created task.
+    
+That's it. Let's restart the application and see the service execution in action.  
+
+First, let's add one more developer - `dev2`.
+
+image:images/create-dev2.png[align="center"]
+
+We have one task assigned to Developer One, so an Admin or Developer Two will be the next least busy developer.  
+
+image:images/create-task-two.png[align="center"]
+
+After adding four tasks, the next least busy developer will be either Admin or Developer One, they both have one task each.
+
+image:images/tasks-list.png[align="center"]
+
+11:45 Deploy 
+
+Let's see how to deploy a Jmix application with an executable JAR file.
+
+First, run the `boot:jar` command in Jmix Studio. 
+
+image:images/boot-jar.png[align="center"]
+
+The file is ready. Navigate to the folder with the file.
+
+image:images/navigate-terminal.png[align="center"]
+
+Then, execute the command `java -jar <file_name>`. 
+
+image:images/java-jar.png[align="center"]
+
+Now you can open the browser and see the application running. 
+
+12:26 Conclusion
+
+With Jmix, you can implement a ready-to-deploy Spring Boot application in minutes, thanks to the powerful development tools and code generators. 
