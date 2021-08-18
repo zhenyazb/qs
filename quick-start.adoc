@@ -26,7 +26,7 @@ Assign a name - `jmix-pm` for your application.
 
 image:images/project-name.png[align="center"]
 
-After the project is created, you can move further with the help of the Jmix Tool Window that allows you to get access to different files and settings as well as add some project-specific objects.
+After the project is created, you can move further with the help of the Jmix Tool Window that allows you to get access to different files and settings, as well as add some project-specific objects.
 
 image:images/studio.png[align="center"]
 
@@ -36,7 +36,7 @@ The first task is creating entities. The business domain model has only two clas
 
 image:images/data-model.png[align="center"]
 
-For a starter, let's create the `Project` entity. To do this, we can use a link on project's welcome page.
+For a starter, let's create the `Project` entity. To do this, we can use a link to the project's welcome page.
 
 image:images/new-entity-welcome.png[align="center"]
 
@@ -58,19 +58,19 @@ In the entity designer, create attributes according to the specification:
 |manager|Association to the "User" entity, many-to-one cardinality|Yes
 |===
 
-In Jmix, we use standard JPA entities, so you can create them using either code editor or visual designer. Just click the *+* icon and add attributes to the entity. Jmix Studio will generate class members for you.
+In Jmix, we use standard JPA entities, so you can create them using either a code editor or a visual designer. Just click the *+* icon and add attributes to the entity. Jmix Studio will generate class members for you.
 
 image:images/new-attribute.png[align="center"]
 
-Look at the adding a mandatory reference to a user. The relation is many-to-one, so we'll define an association field called `manager` that references the `User` class. Finally, the field definition should look like this:
+Look at how to add a mandatory reference to a user. The relation is many-to-one, so we'll define an association field called `manager` that references the `User` class. Finally, the field definition should look like this:
 
 image:images/manager-attribute.png[align="center"]
 
-In Jmix, you can specify a format for a proper entity display as a string in the UI using *Instance name*. For the `Project` entity, we will select the `name` attribute.
+In Jmix, you can specify a format for a proper entity display as a string in the UI using the *Instance name*. For the `Project` entity, we will select the `name` attribute.
 
 image:images/instance-name.png[align="center"]
 
-If we look at the *Text* tab on the bottom of the entity designer, we can see just a JPA-annotated Java class. The generated code can be updated if needed, and the designer will be updated accordingly when you switch to the *Designer* tab.
+If we look at the *Text* tab at the bottom of the entity designer, we can see just a JPA-annotated Java class. The generated code can be updated if needed, and the designer will be updated accordingly when you switch to the *Designer* tab.
 
 Let's move further and create the `Task` entity and link it to our `Project` class. Fields specification table follows.
 
@@ -129,9 +129,9 @@ image:images/templates.png[align="center"]
 
 Then click *Next* and stop at the *Entity browser fetch plan* step.
 
-In Jmix, we can define several fetch plans for every entity. They specify which fields will be fetched from the database. You can define fetch plans in a separate file to use them in the different modules of your application or create an inline fetch plan while creating a screen.
+In Jmix, we can define several fetch plans for every entity. They specify which fields will be fetched from the database. You can define fetch plans in a separate file to use them in different modules of your application or create an inline fetch plan while creating a screen.
 
-Let's create an inline fetch plan. In addition to selected properties, mark the `manager` reference.
+Let's create an inline fetch plan. In addition to the selected properties, mark the `manager` reference.
 
 image:images/project-browser.png[align="center"]
 
@@ -170,11 +170,11 @@ Please pay attention to the data section in the XML screen descriptors - it defi
 </data>
 ----
 
-After screens are created, you can see screen preview by using buttons in the top right corner of the screen layout editor. The preview shows that all selected attributes are added to the screens.
+After screens are created, you can preview a screen by using buttons in the top right corner of the screen layout editor. The preview shows that all selected attributes are added to the screens.
 
 image:images/preview.png[align="center"]
 
-UI components can be bound to data in a bi-directional way. All changes in the bound fields are reflected in the selected data and vice versa. 
+UI components can be bound to data in a bidirectional way. All changes in the bound fields are reflected in the selected data and vice versa. 
 
 image:images/bound-data.png[align="center"]
 
@@ -194,7 +194,7 @@ image:images/navigate-descriptor.png[align="center"]
 
 image:images/navigate-data-model.png[align="center"]
 
-7:25 Running application in development mode 
+7:25 Running application in the development mode 
 
 To run the application, you can use the *Run Configuration* tool on the top of the IDE window.
 
@@ -230,7 +230,7 @@ Save the newly created project. The task will be saved automatically.
 
 8:25 Adding security
 
-In Jmix, you can create roles and give them permissions to access the application data such as particular entities, attributes, or functionality like screens and menu items in the admin UI. 
+In Jmix, you can create roles and give them permissions to access the application data such as particular entities, attributes, or functionality like screens and menu items, in the admin UI. 
 
 Open the *Resource roles* screen and create the "Developer" role. Select *Entity policy* from the list and allow developers to view and edit tasks.
 
@@ -274,7 +274,7 @@ image:images/empty-class.png[align="center"]
 
 Let's create the `findLeastBusyUser()` method. In the service, we will use the Jmix service - `DataManager`. It allows us to access data by using a JPQL query.
 
-Inject `DataManager` into the service by using the *Inject* button on the top of the window.
+Inject `DataManager` into the service by using the *Inject* button on top of the window.
 
 image:images/inject-button.png[align="center"]
 
@@ -305,7 +305,7 @@ public class TaskService {
     }
 }
 ----
-<1> A JPQL query that selects users and count tasks assigned to these users.
+<1> A JPQL query that selects users and counts tasks assigned to these users.
 <2> Takes the first user in the selected set.
 <3> Returns the user.
 
