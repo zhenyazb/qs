@@ -36,7 +36,7 @@ The first task is creating entities. The business domain model has only two clas
 
 image:images/data-model.png[align="center"]
 
-For a starter, let's create the `Project` entity. To do this, we can use a link to the project's welcome page.
+For a starter, let's create the `Project` entity. To do this, we can use a link on the project's welcome page.
 
 image:images/new-entity-welcome.png[align="center"]
 
@@ -66,7 +66,7 @@ Look at how to add a mandatory reference to a user. The relation is many-to-one,
 
 image:images/manager-attribute.png[align="center"]
 
-In Jmix, you can specify a format for a proper entity display as a string in the UI using the *Instance name*. For the `Project` entity, we will select the `name` attribute.
+In Jmix, you can specify a format for a proper entity display as a string in the UI using the *Instance name* field. For the `Project` entity, we will select the `name` attribute.
 
 image:images/instance-name.png[align="center"]
 
